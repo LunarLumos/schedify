@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title id="pageTitle">Batch 20 Real-Time Schedule</title>
+<script>
+  let isFlashing = true;
+  setInterval(() => {
+    document.title = isFlashing ? '🌕 LunarLumos' : ' Batch 20 Schedule';
+    isFlashing = !isFlashing;
+  }, 1000);
+</script>
+
+<style>
+body {
+	font-family: Arial, sans-serif;
+	margin: 0;
+	padding: 0;
+	background-color: #f4f4f4;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 100vh;
+	flex-direction: column;
+}
+
+.container {
+	display: flex;
+	justify-content: space-between;
+	width: 80%;
+	padding: 20px;
+	background-color: #fff;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	border-radius: 10px;
+}
+
+.section {
+	width: 48%;
+	padding: 20px;
+	background-color: #e3e3e3;
+	border-radius: 8px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.date-time {
+	font-size: 24px;
+	margin-bottom: 20px;
+}
+
+.class-info {
+	font-size: 18px;
+	margin-bottom: 15px;
+}
+
+.footer {
+	text-align: center;
+	margin-top: 20px;
+}
+
+.footer a {
+	text-decoration: none;
+	color: #007BFF;
+}
+
+.holiday {
+	color: red;
+}
+
+.header {
+	font-size: 32px;
+	margin-bottom: 20px;
+}
+
+.section-header {
+	font-size: 24px;
+	margin-bottom: 15px;
+	text-align: center;
+}
+</style>
+</head>
+<body>
+	<div class="header">Batch 20 Schedule</div><style>.header { color: pink; font-weight: bold; }</style><script>document.querySelector('.header').style.fontWeight = 'bolder';</script>
+<div class="container">
+<!-- Left Section (Section A & Lab B) -->
+<div class="section" id="sectionA">
+<div class="section-header">Section A - Lab B</div>
+<div class="date-time" id="dateTimeA"></div>
+<div class="class-info" id="runningClassA"></div>
+<div class="class-info" id="upcomingClassA"></div>
+</div>
+
+<!-- Right Section (Section B & Lab C) -->
+<div class="section" id="sectionB">
+<div class="section-header">Section B - Lab C</div>
+<div class="date-time" id="dateTimeB"></div>
+<div class="class-info" id="runningClassB"></div>
+<div class="class-info" id="upcomingClassB"></div>
+</div>
+</div>
+
+<div class="footer">
+
+	<p style="color: gold; font-size: 20px;">Made with 🖤 by <a href="https://github.com/LunarLumos" target="_blank" style="color: gold; animation: blink 1s step-end infinite;">Aadil </a></p>
+<style>@keyframes blink { 50% { opacity: 0; } }</style>
+
+	
+	</div>
+
+<script>
+// Schedule data
+const sectionA_schedule = {
+	Sunday: [
+		{ time: '13:00', course: 'English II', room: '704', teacher: 'SAE', start: '13:00', end: '14:30' },
+		{ time: '14:30', course: 'Data structure', room: '702', teacher: 'MFH', start: '14:30', end: '16:00' },
+	//	{ time: '21:30', course: 'SP', room: '704', teacher: 'MFH', start: '21:30', end: '22:00' }
+	],
+	Monday: [
+		{ time: '08:30', course: 'WDE', room: '704', teacher: 'IS', start: '08:30', end: '10:00' },
+		{ time: '13:00', course: 'Discrete Mathematics', room: '704', teacher: 'SN', start: '13:00', end: '14:30' },
+		{ time: '14:30', course: 'DS Lab', room: '615 Lab', teacher: 'MFH', start: '14:30', end: '16:00' }
+	],
+	Tuesday: [
+		{ time: '08:30', course: 'WDE', room: '704', teacher: 'IS', start: '08:30', end: '10:00' },
+		{ time: '11:30', course: 'Data structure', room: '703', teacher: 'MFH', start: '11:30', end: '13:00' },
+	],
+	Wednesday: [
+	{ time: '8:30', course: 'English II', room: '702', teacher: 'SAE', start: '08:30', end: '10:00' },
+	{ time: '10:00', course: 'Discrete Mathematics', room: '702', teacher: 'SN', start: '10:00', end: '11:30' },
+	{ time: '14:30', course: 'WDE Lab', room: '615 Lab', teacher: 'IS', start: '14:30', end: '16:00' },
+	],
+	Thursday: [],
+	Friday: [],
+	Saturday: []
+
+};
+
+const sectionB_schedule = {
+	Sunday: [],
+	Monday: [
+	//	{ time: '08:30', course: 'DM', room: '704', teacher: 'SN', start: '08:30', end: '10:00' },
+	//	{ time: '10:00', course: 'DS Lab', room: '615 Lab', teacher: 'MFH', start: '10:00', end: '11:30' },
+	//	{ time: '11:30', course: 'SP', room: '704', teacher: 'MFH', start: '11:30', end: '13:00' }
+	],
+	Tuesday: [
+	//	{ time: '08:30', course: 'WDE', room: '704', teacher: 'IS', start: '08:30', end: '10:00' },
+	//	{ time: '10:00', course: 'DS Lab', room: '615 Lab', teacher: 'MFH', start: '10:00', end: '11:30' },
+	],
+	Wednesday: [
+	//	{ time: '08:30', course: 'DM', room: '704', teacher: 'SN', start: '08:30', end: '10:00' },
+	//	{ time: '10:00', course: 'DS Lab', room: '615 Lab', teacher: 'MFH', start: '10:00', end: '11:30' },
+	],
+	Thursday: [],
+	Friday: [],
+	Saturday: []
+
+};
+
+function getCurrentDateTime() {
+	const now = new Date();
+	const options = { 
+		weekday: 'long', 
+		year: 'numeric', 
+		month: 'long', 
+		day: 'numeric', 
+		hour: '2-digit', 
+		minute: '2-digit', 
+		hour12: false,
+		timeZone: 'Asia/Dhaka'
+	};
+	
+	return now.toLocaleString('en-US', options);
+}
+
+// running and upcoming classes
+function checkClass(schedule, section) {
+	const now = new Date();
+	const currentDay = now.toLocaleString('en-US', { weekday: 'long', timeZone: 'Asia/Dhaka' });
+	const currentTime = now.getHours() * 100 + now.getMinutes(); // Time in HHMM format
+	
+	let runningClass = null;
+	let upcomingClass = null;
+	
+	const dailySchedule = schedule[currentDay];
+	
+	if (dailySchedule.length === 0) {
+		document.getElementById(`runningClass${section}`).innerHTML = "<span class='holiday'>Holiday</span>";
+		document.getElementById(`upcomingClass${section}`).innerHTML = "<span class='holiday'>Holiday</span>";
+		return;
+	}
+	
+	dailySchedule.forEach((item) => {
+		const classStart = parseInt(item.start.replace(':', ''), 10);
+		const classEnd = parseInt(item.end.replace(':', ''), 10);
+		
+		if (currentTime >= classStart && currentTime < classEnd) {
+			runningClass = item;
+		} else if (currentTime < classStart && !upcomingClass) {
+			upcomingClass = item;
+		}
+	});
+	
+	if (runningClass) {
+		document.getElementById(`runningClass${section}`).innerHTML = `Running Class: <br> 
+		<strong>Course:</strong> ${runningClass.course} <br> 
+		<strong>Room:</strong> ${runningClass.room} <br> 
+		<strong>Teacher:</strong> ${runningClass.teacher} <br> 
+		<strong>Ends at:</strong> ${runningClass.end} <br>`;
+	} else {
+		document.getElementById(`runningClass${section}`).innerHTML = "No running class.";
+	}
+	
+	// Display the upcoming class
+	if (upcomingClass) {
+		document.getElementById(`upcomingClass${section}`).innerHTML = `Upcoming Class: <br> 
+		<strong>Course:</strong> ${upcomingClass.course} <br> 
+		<strong>Room:</strong> ${upcomingClass.room} <br> 
+		<strong>Teacher:</strong> ${upcomingClass.teacher} <br> 
+		<strong>Starts at:</strong> ${upcomingClass.start} <br>`;
+	} else {
+		document.getElementById(`upcomingClass${section}`).innerHTML = "No upcoming class.";
+	}
+}
+
+function updateTimeAndClassInfo() {
+	document.getElementById("dateTimeA").innerText = getCurrentDateTime();
+	document.getElementById("dateTimeB").innerText = getCurrentDateTime();
+	
+	checkClass(sectionA_schedule, 'A');
+	checkClass(sectionB_schedule, 'B');
+}
+
+// Update
+setInterval(updateTimeAndClassInfo, 60000); // Update every 1 minute
+updateTimeAndClassInfo();  // Initial call to display immediately
+</script>
+<img src="https://images7.alphacoders.com/458/thumbbig-458251.webp" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1;">
+
+</body>
+</html>
