@@ -137,26 +137,31 @@ const sectionA_schedule = {
 };
 
 const sectionB_schedule = {
-	Sunday: [],
+	Sunday: [
+		{ time: '11:30', course: 'DS', room: '702', teacher: 'MH', start: '11:30', end: '13:00' },
+		{ time: '14:30', course: 'SP', room: '704', teacher: 'SAE', start: '14:30', end: '16:00' }
+	],
 	Monday: [
-	//	{ time: '08:30', course: 'DM', room: '704', teacher: 'SN', start: '08:30', end: '10:00' },
-	//	{ time: '10:00', course: 'DS Lab', room: '615 Lab', teacher: 'MFH', start: '10:00', end: '11:30' },
-	//	{ time: '11:30', course: 'SP', room: '704', teacher: 'MFH', start: '11:30', end: '13:00' }
+		{ time: '08:30', course: 'WDE', room: '703', teacher: 'MAMR', start: '08:30', end: '10:00' },
+		{ time: '10:00', course: 'DM', room: '704', teacher: 'SN', start: '10:00', end: '11:30' },
+		{ time: '14:30', course: 'DS', room: '702', teacher: 'MH', start: '14:30', end: '16:00' }
 	],
 	Tuesday: [
-	//	{ time: '08:30', course: 'WDE', room: '704', teacher: 'IS', start: '08:30', end: '10:00' },
-	//	{ time: '10:00', course: 'DS Lab', room: '615 Lab', teacher: 'MFH', start: '10:00', end: '11:30' },
 	],
 	Wednesday: [
-	//	{ time: '08:30', course: 'DM', room: '704', teacher: 'SN', start: '08:30', end: '10:00' },
-	//	{ time: '10:00', course: 'DS Lab', room: '615 Lab', teacher: 'MFH', start: '10:00', end: '11:30' },
+		{ time: '08:30', course: 'WDE', room: '704', teacher: 'MAMR', start: '08:30', end: '10:00' },
+		{ time: '11:30', course: 'English II', room: '702', teacher: 'SAE', start: '11:30', end: '13:00' },
 	],
-	Thursday: [],
+	Thursday: [
+		{ time: '08:30', course: 'DS Lab ', room: '615 Lab', teacher: 'MH', start: '08:30', end: '10:00' },
+		{ time: '10:00', course: 'WED Lab', room: '615 Lab', teacher: 'MAMR', start: '10:00', end: '11:30' },
+	],
 	Friday: [],
 	Saturday: []
 
 };
 
+// Function to get current time and date
 function getCurrentDateTime() {
 	const now = new Date();
 	const options = { 
@@ -173,7 +178,7 @@ function getCurrentDateTime() {
 	return now.toLocaleString('en-US', options);
 }
 
-// running and upcoming classes
+// Check for running and upcoming classes
 function checkClass(schedule, section) {
 	const now = new Date();
 	const currentDay = now.toLocaleString('en-US', { weekday: 'long', timeZone: 'Asia/Dhaka' });
@@ -201,6 +206,7 @@ function checkClass(schedule, section) {
 		}
 	});
 	
+	// Display the current running class
 	if (runningClass) {
 		document.getElementById(`runningClass${section}`).innerHTML = `Running Class: <br> 
 		<strong>Course:</strong> ${runningClass.course} <br> 
@@ -223,6 +229,7 @@ function checkClass(schedule, section) {
 	}
 }
 
+// Function to update the time and class information
 function updateTimeAndClassInfo() {
 	document.getElementById("dateTimeA").innerText = getCurrentDateTime();
 	document.getElementById("dateTimeB").innerText = getCurrentDateTime();
@@ -231,7 +238,7 @@ function updateTimeAndClassInfo() {
 	checkClass(sectionB_schedule, 'B');
 }
 
-// Update
+// Update every minute
 setInterval(updateTimeAndClassInfo, 60000); // Update every 1 minute
 updateTimeAndClassInfo();  // Initial call to display immediately
 </script>
