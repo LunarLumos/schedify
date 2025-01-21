@@ -16,9 +16,6 @@ Below is an example of how the schedule appears in the app:
 
 ![Schedule Example](https://raw.githubusercontent.com/LunarLumos/schedify/refs/heads/main/routine.png)
 
-## How to Use
-1. Open the app on your device via the link: [Schedify](https://lunarlumos.github.io/schedify/).
-2. Check for updates on classes or holidays.
 
 ## Contact
 For any issues or suggestions, feel free to reach out to the developers or support team at [aadil025@gmail.com](mailto:aadil025@gmail.com).
