@@ -18,7 +18,7 @@ Below is an example of how the schedule appears in the app:
 
 
 ## Contact
-For any issues or suggestions, feel free to reach out to the developers or support team at [aadil025@gmail.com](mailto:aadil025@gmail.com).
+For any issues or suggestions, feel free to reach out to the developers or support team at [aadil025@yahoo.com](mailto:aadil025@yahoo.com).
 
 ## License
 This project is licensed under the MIT License.
