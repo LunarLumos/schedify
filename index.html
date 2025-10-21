@@ -21,10 +21,11 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start;
       color: #5a3e7a;
       overflow-x: hidden;
       position: relative;
+      padding-top: 20px;
     }
 
     @keyframes gradientBG {
@@ -95,7 +96,7 @@
       font-weight: 600;
     }
 
-    .class-info {
+    .class-info, .transport-info {
       background: rgba(255, 240, 250, 0.8);
       padding: 16px;
       border-radius: 16px;
@@ -104,6 +105,11 @@
       line-height: 1.5;
       border-left: 4px solid #ff9ec9;
       animation: fadeIn 0.8s ease-out;
+    }
+
+    .transport-info {
+      background: rgba(230, 245, 255, 0.85);
+      border-left-color: #4fc3f7;
     }
 
     @keyframes fadeIn {
@@ -126,6 +132,7 @@
       font-size: 1.1rem;
       color: #8a4fff;
       margin-top: 10px;
+      margin-bottom: 20px;
     }
 
     .footer a {
@@ -143,7 +150,7 @@
     @media (max-width: 600px) {
       .header { font-size: 2.2rem; }
       .container { width: 95%; padding: 20px; }
-      .class-info { font-size: 1rem; }
+      .class-info, .transport-info { font-size: 1rem; }
     }
 
     .cursor-trail {
@@ -162,6 +169,7 @@
 
   <div class="header">🌙 Batch 20 Schedule</div>
 
+  <!-- Class Schedule -->
   <div class="container">
     <div class="section-header">🌸 Section A — Lab A</div>
     <div class="date-time" id="dateTimeA"></div>
@@ -170,11 +178,18 @@
     <div class="class-info next-day-hint" id="nextDayHint" style="display: none;"></div>
   </div>
 
+  <!-- Transport Schedule -->
+  <div class="container">
+    <div class="section-header">🚌 Transport Schedule</div>
+    <div class="transport-info" id="nextTransport"></div>
+  </div>
+
   <div class="footer">
     Made with 💖 by <a href="https://github.com/LunarLumos" target="_blank">Aadil</a>
   </div>
 
   <script>
+    // ===== CLASS SCHEDULE =====
     const sectionA_schedule = {
       Sunday: [
         { time: '08:30', course: 'CN_LAB', room: 'G25', teacher: 'MMA', start: '08:30', end: '10:00' },
@@ -197,7 +212,23 @@
       Saturday: []
     };
 
-    const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    // ===== TRANSPORT SCHEDULE =====
+    // "toDIU" = FROM home locations TO DIU
+    // "fromDIU" = FROM DIU TO home locations
+    const transportSchedule = {
+      toDIU: [
+        { time: '07:00', location: 'Dhanmondi' },
+        { time: '08:30', location: 'Sony Cinema Hall' },
+        { time: '10:00', location: 'Dhanmondi' },
+        { time: '12:00', location: 'Sony Cinema Hall' }
+      ],
+      fromDIU: [
+        { time: '11:15', location: 'Sony Cinema Hall' },
+        { time: '13:30', location: 'Dhanmondi' },
+        { time: '16:20', location: 'Sony Cinema Hall | Dhanmondi' },
+        { time: '18:30', location: 'Sony Cinema Hall | Dhanmondi' }
+      ]
+    };
 
     function getCurrentDateTime() {
       const now = new Date();
@@ -220,6 +251,10 @@
       return tomorrow.toLocaleString('en-US', { weekday: 'long', timeZone: 'Asia/Dhaka' });
     }
 
+    function parseTime(timeStr) {
+      return parseInt(timeStr.replace(':', ''), 10);
+    }
+
     function checkClass(schedule, section) {
       const now = new Date();
       const currentDay = now.toLocaleString('en-US', { weekday: 'long', timeZone: 'Asia/Dhaka' });
@@ -234,8 +269,8 @@
         let upcomingClass = null;
 
         dailySchedule.forEach(item => {
-          const classStart = parseInt(item.start.replace(':', ''), 10);
-          const classEnd = parseInt(item.end.replace(':', ''), 10);
+          const classStart = parseTime(item.start);
+          const classEnd = parseTime(item.end);
           if (currentTime >= classStart && currentTime < classEnd) {
             runningClass = item;
           } else if (currentTime < classStart && !upcomingClass) {
@@ -268,15 +303,20 @@
         }
       }
 
+      // Tomorrow hint
       const tomorrow = getTomorrowDayName();
       const tomorrowSchedule = schedule[tomorrow] || [];
       const nextDayHintEl = document.getElementById('nextDayHint');
 
       if (tomorrowSchedule.length > 0) {
+        const sortedTomorrow = [...tomorrowSchedule].sort((a, b) => parseTime(a.start) - parseTime(b.start));
+        const firstClass = sortedTomorrow[0];
         const courses = [...new Set(tomorrowSchedule.map(cls => cls.course))].join(', ');
+
         nextDayHintEl.innerHTML = `
           🌙 <strong>Tomorrow’s Glimmer</strong><br>
           You’ll have: <strong>${courses}</strong><br>
+          🕒 First class starts at: <strong>${firstClass.start}</strong><br>
           Get ready to shine! ✨
         `;
         nextDayHintEl.style.display = 'block';
@@ -285,11 +325,55 @@
       }
     }
 
+    function findNextTransport() {
+      const now = new Date();
+      const currentTime = now.getHours() * 100 + now.getMinutes();
+
+      // Map transports with clear human-readable directions
+      const allTransports = [
+        ...transportSchedule.toDIU.map(t => ({
+          ...t,
+          direction: 'From Home → DIU',
+          numericTime: parseTime(t.time)
+        })),
+        ...transportSchedule.fromDIU.map(t => ({
+          ...t,
+          direction: 'From DIU → Home',
+          numericTime: parseTime(t.time)
+        }))
+      ].sort((a, b) => a.numericTime - b.numericTime);
+
+      let next = allTransports.find(t => t.numericTime > currentTime);
+
+      if (!next && allTransports.length > 0) {
+        next = allTransports[0];
+        return `
+          🌙 <strong>First Transport Tomorrow</strong><br>
+          🚌 ${next.direction}<br>
+          ⏰ Departs at: <strong>${next.time}</strong><br>
+          📍 Pick-up: ${next.location}
+        `;
+      }
+
+      if (next) {
+        return `
+          🚌 <strong>Next Transport</strong><br>
+          ➡️ ${next.direction}<br>
+          ⏰ Departs at: <strong>${next.time}</strong><br>
+          📍 Pick-up: ${next.location}
+        `;
+      } else {
+        return "🚌 No scheduled transport found.";
+      }
+    }
+
     function updateTimeAndClassInfo() {
       document.getElementById("dateTimeA").innerText = getCurrentDateTime();
       checkClass(sectionA_schedule, 'A');
+      document.getElementById("nextTransport").innerHTML = findNextTransport();
     }
 
+    // Cursor trail effect
     document.addEventListener('DOMContentLoaded', () => {
       const trailCount = 12;
       const trails = [];
@@ -297,17 +381,10 @@
         const dot = document.createElement('div');
         dot.classList.add('cursor-trail');
         document.body.appendChild(dot);
-        trails.push({
-          el: dot,
-          x: 0,
-          y: 0,
-          opacity: 0
-        });
+        trails.push({ el: dot, x: 0, y: 0, opacity: 0 });
       }
 
-      let mouseX = 0;
-      let mouseY = 0;
-
+      let mouseX = 0, mouseY = 0;
       document.addEventListener('mousemove', (e) => {
         mouseX = e.clientX;
         mouseY = e.clientY;
@@ -326,16 +403,13 @@
           }
 
           trail.opacity = Math.max(0, trail.opacity - 0.02);
-          if (Math.abs(trail.x - mouseX) < 2 && Math.abs(trail.y - mouseY) < 2 && i === 0) {
-            trail.opacity = 1;
-          }
+          if (i === 0) trail.opacity = 1;
 
           trail.el.style.left = trail.x - 5 + 'px';
           trail.el.style.top = trail.y - 5 + 'px';
           trail.el.style.opacity = trail.opacity;
           trail.el.style.backgroundColor = colors[i % colors.length];
         });
-
         requestAnimationFrame(animateTrails);
       }
 
