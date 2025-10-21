@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>✨ LunarLumos Schedule</title>
+  <title>Schedify</title>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;600;800&family=Mochiy+Pop+One&display=swap" rel="stylesheet">
   <style>
     * {
@@ -167,7 +167,7 @@
 </head>
 <body>
 
-  <div class="header">🌙 Batch 20 Schedule</div>
+  <div class="header">Schedify</div>
 
   <!-- Class Schedule -->
   <div class="container">
@@ -213,8 +213,6 @@
     };
 
     // ===== TRANSPORT SCHEDULE =====
-    // "toDIU" = FROM home locations TO DIU
-    // "fromDIU" = FROM DIU TO home locations
     const transportSchedule = {
       toDIU: [
         { time: '07:00', location: 'Dhanmondi' },
@@ -251,73 +249,133 @@
       return tomorrow.toLocaleString('en-US', { weekday: 'long', timeZone: 'Asia/Dhaka' });
     }
 
-    function parseTime(timeStr) {
-      return parseInt(timeStr.replace(':', ''), 10);
+    function timeToMinutes(timeStr) {
+      const [h, m] = timeStr.split(':').map(Number);
+      return h * 60 + m;
+    }
+
+    function createTodayDateFromTime(timeStr) {
+      const now = new Date();
+      const [h, m] = timeStr.split(':').map(Number);
+      const d = new Date(now.getFullYear(), now.getMonth(), now.getDate(), h, m, 0);
+      return d;
+    }
+
+    function formatCountdown(targetDate) {
+      const now = new Date();
+      const diff = targetDate - now;
+      if (diff <= 0) return "";
+      const totalSec = Math.floor(diff / 1000);
+      const h = Math.floor(totalSec / 3600);
+      const m = Math.floor((totalSec % 3600) / 60);
+      const s = totalSec % 60;
+      let parts = [];
+      if (h > 0) parts.push(`${h}h`);
+      if (m > 0) parts.push(`${m}m`);
+      if (h === 0) parts.push(`${s}s`);
+      return parts.slice(0, 2).join(' ');
+    }
+
+    let activeIntervals = [];
+
+    function clearIntervals() {
+      activeIntervals.forEach(id => clearInterval(id));
+      activeIntervals = [];
     }
 
     function checkClass(schedule, section) {
       const now = new Date();
       const currentDay = now.toLocaleString('en-US', { weekday: 'long', timeZone: 'Asia/Dhaka' });
-      const currentTime = now.getHours() * 100 + now.getMinutes();
       const dailySchedule = schedule[currentDay] || [];
 
+      clearIntervals();
+
       if (dailySchedule.length === 0) {
-        document.getElementById(`runningClass${section}`).innerHTML = "<span class='holiday'>✨ Holiday ✨</span>";
-        document.getElementById(`upcomingClass${section}`).innerHTML = "<span class='holiday'>No classes today 💤</span>";
+        document.getElementById(`runningClass${section}`).innerHTML = "<span class='holiday'>🎀 A day wrapped in soft clouds — enjoy the pause!</span>";
+        document.getElementById(`upcomingClass${section}`).innerHTML = "<span class='holiday'>🌼 Today is a blank canvas — paint it gently!</span>";
       } else {
         let runningClass = null;
         let upcomingClass = null;
+        const nowMins = now.getHours() * 60 + now.getMinutes();
 
         dailySchedule.forEach(item => {
-          const classStart = parseTime(item.start);
-          const classEnd = parseTime(item.end);
-          if (currentTime >= classStart && currentTime < classEnd) {
+          const classStart = timeToMinutes(item.start);
+          const classEnd = timeToMinutes(item.end);
+          if (nowMins >= classStart && nowMins < classEnd) {
             runningClass = item;
-          } else if (currentTime < classStart && !upcomingClass) {
+          } else if (nowMins < classStart && !upcomingClass) {
             upcomingClass = item;
           }
         });
 
+        // Running Class
+        const runningEl = document.getElementById(`runningClass${section}`);
         if (runningClass) {
-          document.getElementById(`runningClass${section}`).innerHTML = `
-            🚀 <strong>Running Class</strong><br>
+          const endTime = createTodayDateFromTime(runningClass.end);
+          runningEl.innerHTML = `
+            🌸 <strong>Your class is blooming!</strong><br>
             📚 Course: ${runningClass.course}<br>
             🏫 Room: ${runningClass.room}<br>
             👩‍🏫 Teacher: ${runningClass.teacher}<br>
-            ⏳ Ends at: ${runningClass.end}
+            💫 This class will fade into stardust in: <span id="countdown-running">${formatCountdown(endTime)}</span>
           `;
+          const interval1 = setInterval(() => {
+            const cd = document.getElementById('countdown-running');
+            if (cd && new Date() < endTime) {
+              cd.textContent = formatCountdown(endTime);
+            } else {
+              if (cd) cd.textContent = "🌙 Class has drifted away... rest your mind 💤";
+              clearInterval(interval1);
+            }
+          }, 1000);
+          activeIntervals.push(interval1);
         } else {
-          document.getElementById(`runningClass${section}`).innerHTML = "🌈 No running class right now!";
+          runningEl.innerHTML = "🌈 No class is dancing right now...";
         }
 
+        // Upcoming Class
+        const upcomingEl = document.getElementById(`upcomingClass${section}`);
         if (upcomingClass) {
-          document.getElementById(`upcomingClass${section}`).innerHTML = `
-            🌟 <strong>Upcoming Class</strong><br>
+          const startTime = createTodayDateFromTime(upcomingClass.start);
+          upcomingEl.innerHTML = `
+            🌼 <strong>A new lesson is on its way!</strong><br>
             📚 Course: ${upcomingClass.course}<br>
             🏫 Room: ${upcomingClass.room}<br>
             👩‍🏫 Teacher: ${upcomingClass.teacher}<br>
-            ⏰ Starts at: ${upcomingClass.start}
+            ⏳ Your next lesson is tiptoeing closer... <span id="countdown-upcoming">${formatCountdown(startTime)}</span>
           `;
+          const interval2 = setInterval(() => {
+            const cd = document.getElementById('countdown-upcoming');
+            if (cd && new Date() < startTime) {
+              cd.textContent = formatCountdown(startTime);
+            } else {
+              if (cd) cd.textContent = "✨ Your class has floated in! Time to learn~";
+              clearInterval(interval2);
+            }
+          }, 1000);
+          activeIntervals.push(interval2);
         } else {
-          document.getElementById(`upcomingClass${section}`).innerHTML = "🌙 No more classes today! Rest well~";
+          upcomingEl.innerHTML = "🌙 No more classes today! Rest well under the stars~";
         }
       }
 
-      // Tomorrow hint
+      // Tomorrow hint — with FIRST and LAST class
       const tomorrow = getTomorrowDayName();
       const tomorrowSchedule = schedule[tomorrow] || [];
       const nextDayHintEl = document.getElementById('nextDayHint');
 
       if (tomorrowSchedule.length > 0) {
-        const sortedTomorrow = [...tomorrowSchedule].sort((a, b) => parseTime(a.start) - parseTime(b.start));
+        const sortedTomorrow = [...tomorrowSchedule].sort((a, b) => timeToMinutes(a.start) - timeToMinutes(b.start));
         const firstClass = sortedTomorrow[0];
+        const lastClass = sortedTomorrow[sortedTomorrow.length - 1];
         const courses = [...new Set(tomorrowSchedule.map(cls => cls.course))].join(', ');
 
         nextDayHintEl.innerHTML = `
           🌙 <strong>Tomorrow’s Glimmer</strong><br>
           You’ll have: <strong>${courses}</strong><br>
           🕒 First class starts at: <strong>${firstClass.start}</strong><br>
-          Get ready to shine! ✨
+          🕛 Last class ends at: <strong>${lastClass.end}</strong><br>
+          Get ready to shine like moonlight! ✨
         `;
         nextDayHintEl.style.display = 'block';
       } else {
@@ -327,50 +385,73 @@
 
     function findNextTransport() {
       const now = new Date();
-      const currentTime = now.getHours() * 100 + now.getMinutes();
-
-      // Map transports with clear human-readable directions
       const allTransports = [
         ...transportSchedule.toDIU.map(t => ({
           ...t,
           direction: 'From Home → DIU',
-          numericTime: parseTime(t.time)
+          numericTime: timeToMinutes(t.time)
         })),
         ...transportSchedule.fromDIU.map(t => ({
           ...t,
           direction: 'From DIU → Home',
-          numericTime: parseTime(t.time)
+          numericTime: timeToMinutes(t.time)
         }))
       ].sort((a, b) => a.numericTime - b.numericTime);
 
-      let next = allTransports.find(t => t.numericTime > currentTime);
+      const nowMins = now.getHours() * 60 + now.getMinutes();
+      let next = allTransports.find(t => t.numericTime > nowMins);
+
+      const transportEl = document.getElementById('nextTransport');
+      clearIntervals();
 
       if (!next && allTransports.length > 0) {
         next = allTransports[0];
-        return `
+        const tomorrowDate = new Date(now);
+        tomorrowDate.setDate(tomorrowDate.getDate() + 1);
+        tomorrowDate.setHours(parseInt(next.time.split(':')[0]), parseInt(next.time.split(':')[1]), 0, 0);
+        transportEl.innerHTML = `
           🌙 <strong>First Transport Tomorrow</strong><br>
           🚌 ${next.direction}<br>
           ⏰ Departs at: <strong>${next.time}</strong><br>
           📍 Pick-up: ${next.location}
+          <br>💨 It’s gone... but another will come soon! 🌈 <span id="countdown-transport">${formatCountdown(tomorrowDate)}</span>
         `;
-      }
-
-      if (next) {
-        return `
-          🚌 <strong>Next Transport</strong><br>
+        const interval = setInterval(() => {
+          const cd = document.getElementById('countdown-transport');
+          if (cd) cd.textContent = formatCountdown(tomorrowDate);
+        }, 1000);
+        activeIntervals.push(interval);
+      } else if (next) {
+        const targetTime = createTodayDateFromTime(next.time);
+        if (targetTime <= now) {
+          targetTime.setDate(targetTime.getDate() + 1);
+        }
+        transportEl.innerHTML = `
+          🌸 <strong>Your ride is waiting!</strong><br>
           ➡️ ${next.direction}<br>
           ⏰ Departs at: <strong>${next.time}</strong><br>
           📍 Pick-up: ${next.location}
+          <br>🚌 Your ride is whispering your name... ✨ <span id="countdown-transport">${formatCountdown(targetTime)}</span>
         `;
+        const interval = setInterval(() => {
+          const cd = document.getElementById('countdown-transport');
+          if (cd && new Date() < targetTime) {
+            cd.textContent = formatCountdown(targetTime);
+          } else {
+            if (cd) cd.textContent = "💨 It’s gone... but another will come soon! 🌈";
+            clearInterval(interval);
+          }
+        }, 1000);
+        activeIntervals.push(interval);
       } else {
-        return "🚌 No scheduled transport found.";
+        transportEl.innerHTML = "🚌 No scheduled transport found.";
       }
     }
 
     function updateTimeAndClassInfo() {
       document.getElementById("dateTimeA").innerText = getCurrentDateTime();
       checkClass(sectionA_schedule, 'A');
-      document.getElementById("nextTransport").innerHTML = findNextTransport();
+      findNextTransport();
     }
 
     // Cursor trail effect
