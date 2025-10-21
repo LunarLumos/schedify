@@ -1,251 +1,348 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>✨ LunarLumos Schedule</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;600;800&family=Mochiy+Pop+One&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-<title id="pageTitle">Batch 20 Schedule</title>
-<script>
-  let isFlashing = true;
-  setInterval(() => {
-    document.title = isFlashing ? '🌕 LunarLumos' : ' Batch 20 Schedule';
-    isFlashing = !isFlashing;
-  }, 1000);
-</script>
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: linear-gradient(135deg, #f5e6fa, #d0f0ff, #fff0f5);
+      background-size: 400% 400%;
+      animation: gradientBG 15s ease infinite;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #5a3e7a;
+      overflow-x: hidden;
+      position: relative;
+    }
 
-<style>
-body {
-	font-family: Arial, sans-serif;
-	margin: 0;
-	padding: 0;
-	background-color: #f4f4f4;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	height: 100vh;
-	flex-direction: column;
-}
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
 
-.container {
-	display: flex;
-	justify-content: space-between;
-	width: 80%;
-	padding: 20px;
-	background-color: #fff;
-	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-	border-radius: 10px;
-}
+    body::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background-image:
+        radial-gradient(circle, white 1px, transparent 1px),
+        radial-gradient(circle, #ffb7c5 1px, transparent 1px),
+        radial-gradient(circle, #a0e7ff 1px, transparent 1px);
+      background-size: 50px 50px, 70px 70px, 90px 90px;
+      opacity: 0.3;
+      z-index: -1;
+      animation: floatStars 20s linear infinite;
+    }
 
-.section {
-	width: 48%;
-	padding: 20px;
-	background-color: #e3e3e3;
-	border-radius: 8px;
-	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
+    @keyframes floatStars {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-20px); }
+    }
 
-.date-time {
-	font-size: 24px;
-	margin-bottom: 20px;
-}
+    .header {
+      font-family: 'Mochiy Pop One', cursive;
+      font-size: 2.8rem;
+      margin-bottom: 25px;
+      text-align: center;
+      color: #8a4fff;
+      text-shadow: 0 2px 8px rgba(255, 182, 255, 0.5);
+      animation: glow 2s infinite alternate;
+    }
 
-.class-info {
-	font-size: 18px;
-	margin-bottom: 15px;
-}
+    @keyframes glow {
+      from { text-shadow: 0 0 10px #ff9ec9, 0 0 20px #ff9ec9; }
+      to { text-shadow: 0 0 15px #a0e7ff, 0 0 25px #a0e7ff; }
+    }
 
-.footer {
-	text-align: center;
-	margin-top: 20px;
-}
+    .container {
+      width: 90%;
+      max-width: 700px;
+      padding: 25px;
+      background: rgba(255, 255, 255, 0.75);
+      backdrop-filter: blur(12px);
+      border-radius: 24px;
+      box-shadow: 0 10px 30px rgba(138, 79, 255, 0.25);
+      border: 1px solid rgba(255, 200, 230, 0.5);
+      margin-bottom: 30px;
+    }
 
-.footer a {
-	text-decoration: none;
-	color: #007BFF;
-}
+    .section-header {
+      font-size: 1.8rem;
+      text-align: center;
+      margin-bottom: 20px;
+      color: #8a4fff;
+      font-weight: 800;
+    }
 
-.holiday {
-	color: red;
-}
+    .date-time {
+      font-size: 1.4rem;
+      text-align: center;
+      margin-bottom: 20px;
+      color: #5a3e7a;
+      font-weight: 600;
+    }
 
-.header {
-	font-size: 32px;
-	margin-bottom: 20px;
-}
+    .class-info {
+      background: rgba(255, 240, 250, 0.8);
+      padding: 16px;
+      border-radius: 16px;
+      margin-bottom: 18px;
+      font-size: 1.1rem;
+      line-height: 1.5;
+      border-left: 4px solid #ff9ec9;
+      animation: fadeIn 0.8s ease-out;
+    }
 
-.section-header {
-	font-size: 24px;
-	margin-bottom: 15px;
-	text-align: center;
-}
-</style>
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .next-day-hint {
+      border-left-color: #a0e7ff;
+      background: rgba(240, 248, 255, 0.85);
+    }
+
+    .holiday {
+      color: #ff6b9d;
+      font-weight: bold;
+    }
+
+    .footer {
+      text-align: center;
+      font-size: 1.1rem;
+      color: #8a4fff;
+      margin-top: 10px;
+    }
+
+    .footer a {
+      text-decoration: none;
+      color: #ff9ec9;
+      font-weight: bold;
+      animation: blink 1.5s infinite;
+    }
+
+    @keyframes blink {
+      0%, 49% { opacity: 1; }
+      50%, 100% { opacity: 0.3; }
+    }
+
+    @media (max-width: 600px) {
+      .header { font-size: 2.2rem; }
+      .container { width: 95%; padding: 20px; }
+      .class-info { font-size: 1rem; }
+    }
+
+    .cursor-trail {
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      mix-blend-mode: screen;
+      opacity: 0;
+    }
+  </style>
 </head>
 <body>
-	<div class="header">Batch 20 Schedule</div><style>.header { color: pink; font-weight: bold; }</style><script>document.querySelector('.header').style.fontWeight = 'bolder';</script>
-<div class="container">
-<!-- Left Section (Section A & Lab A) -->
-<div class="section" id="sectionA">
-<div class="section-header">Section A - Lab A</div>
-<div class="date-time" id="dateTimeA"></div>
-<div class="class-info" id="runningClassA"></div>
-<div class="class-info" id="upcomingClassA"></div>
-</div>
 
-<!-- Right Section (Section B & Lab C) -->
-<div class="section" id="sectionB">
-<div class="section-header">Section B - Lab C</div>
-<div class="date-time" id="dateTimeB"></div>
-<div class="class-info" id="runningClassB"></div>
-<div class="class-info" id="upcomingClassB"></div>
-</div>
-</div>
+  <div class="header">🌙 Batch 20 Schedule</div>
 
-<div class="footer">
+  <div class="container">
+    <div class="section-header">🌸 Section A — Lab A</div>
+    <div class="date-time" id="dateTimeA"></div>
+    <div class="class-info" id="runningClassA"></div>
+    <div class="class-info" id="upcomingClassA"></div>
+    <div class="class-info next-day-hint" id="nextDayHint" style="display: none;"></div>
+  </div>
 
-	<p style="color: gold; font-size: 20px;">Made with 🖤 by <a href="https://github.com/LunarLumos" target="_blank" style="color: gold; animation: blink 1s step-end infinite;">Aadil </a></p>
-<style>@keyframes blink { 50% { opacity: 0; } }</style>
+  <div class="footer">
+    Made with 💖 by <a href="https://github.com/LunarLumos" target="_blank">Aadil</a>
+  </div>
 
-	
-	</div>
+  <script>
+    const sectionA_schedule = {
+      Sunday: [
+        { time: '08:30', course: 'CN_LAB', room: 'G25', teacher: 'MMA', start: '08:30', end: '10:00' },
+        { time: '11:30', course: 'BDMA', room: '703', teacher: 'MH', start: '11:30', end: '13:00' },
+      ],
+      Monday: [],
+      Tuesday: [
+        { time: '11:30', course: 'FIN', room: '702', teacher: 'JM', start: '11:30', end: '13:00' },
+        { time: '13:00', course: 'DBMS_LAB', room: '615', teacher: 'MH', start: '13:00', end: '14:30' },
+      ],
+      Wednesday: [
+        { time: '13:00', course: 'CN', room: '704', teacher: 'MMA', start: '13:00', end: '14:30' },
+        { time: '14:30', course: 'DBMS', room: '703', teacher: 'MH', start: '14:30', end: '16:00' },
+      ],
+      Thursday: [
+        { time: '10:00', course: 'CN', room: '703', teacher: 'MMA', start: '10:00', end: '11:30' },
+        { time: '11:30', course: 'FIN', room: '702', teacher: 'JM', start: '11:30', end: '13:00' },
+      ],
+      Friday: [],
+      Saturday: []
+    };
 
-<script>
-// Schedule data
-const sectionA_schedule = {
-	Sunday: [
-		{ time: '08:30', course: 'CN_LAB', room: 'G25', teacher: 'MMA', start: '08:30', end: '10:00' },
-		{ time: '11:30', course: 'BDMA', room: '703', teacher: 'MH', start: '11:30', end: '13:00' },
+    const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
+    function getCurrentDateTime() {
+      const now = new Date();
+      return now.toLocaleString('en-US', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        timeZone: 'Asia/Dhaka',
+        hour12: false
+      });
+    }
 
-	],
-	Monday: [
+    function getTomorrowDayName() {
+      const now = new Date();
+      const tomorrow = new Date(now);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      return tomorrow.toLocaleString('en-US', { weekday: 'long', timeZone: 'Asia/Dhaka' });
+    }
 
-	],
-	Tuesday: [
+    function checkClass(schedule, section) {
+      const now = new Date();
+      const currentDay = now.toLocaleString('en-US', { weekday: 'long', timeZone: 'Asia/Dhaka' });
+      const currentTime = now.getHours() * 100 + now.getMinutes();
+      const dailySchedule = schedule[currentDay] || [];
 
-		{ time: '11:30', course: 'FIN', room: '702', teacher: 'JM', start: '11:30', end: '13:00' },
-		{ time: '13:00', course: 'DBMS_LAB', room: '615', teacher: 'MH', start: '13:00', end: '14:30' },
-	],
-	Wednesday: [
-		{ time: '13:00', course: 'CN', room: '704', teacher: 'MMA', start: '13:00', end: '14:30' },
-		{ time: '14:30', course: 'DBMS', room: '703', teacher: 'MH', start: '14:30', end: '16:00' },
-	],
-	Thursday: [
-		{ time: '10:00', course: 'CN', room: '703', teacher: 'MMA', start: '10:00', end: '11:30' },
-		{ time: '11:30', course: 'FIN', room: '702', teacher: 'JM', start: '11:30', end: '13:00' },
-	],
-	Friday: [],
-	Saturday: []
+      if (dailySchedule.length === 0) {
+        document.getElementById(`runningClass${section}`).innerHTML = "<span class='holiday'>✨ Holiday ✨</span>";
+        document.getElementById(`upcomingClass${section}`).innerHTML = "<span class='holiday'>No classes today 💤</span>";
+      } else {
+        let runningClass = null;
+        let upcomingClass = null;
 
-};
+        dailySchedule.forEach(item => {
+          const classStart = parseInt(item.start.replace(':', ''), 10);
+          const classEnd = parseInt(item.end.replace(':', ''), 10);
+          if (currentTime >= classStart && currentTime < classEnd) {
+            runningClass = item;
+          } else if (currentTime < classStart && !upcomingClass) {
+            upcomingClass = item;
+          }
+        });
 
-const sectionB_schedule = {
-	Sunday: [
-		{ time: '11:30', course: 'WDE Lab', room: '615 Lab', teacher: 'IS', start: '11:30', end: '13:00' },
-		{ time: '13:00', course: 'English II', room: '704', teacher: 'SAE', start: '13:00', end: '14:30' },
-		{ time: '14:30', course: 'Data structure', room: '702', teacher: 'MFH', start: '14:30', end: '16:00' }
-	//	{ time: '21:30', course: 'SP', room: '704', teacher: 'MFH', start: '21:30', end: '22:00' }
-	],
-	Monday: [
-		{ time: '08:30', course: 'WDE', room: '704', teacher: 'IS', start: '08:30', end: '10:00' },
-		{ time: '13:00', course: 'Discrete Mathematics', room: '704', teacher: 'SN', start: '13:00', end: '14:30' },
-		{ time: '14:30', course: 'DS Lab', room: '615 Lab', teacher: 'MFH', start: '14:30', end: '16:00' }
-	],
-	Tuesday: [
-		{ time: '08:30', course: 'WDE', room: '702', teacher: 'IS', start: '08:30', end: '10:00' },
-		{ time: '11:30', course: 'Data structure', room: '703', teacher: 'MFH', start: '11:30', end: '13:00' }
-	],
-	Wednesday: [
-	{ time: '8:30', course: 'English II', room: '702', teacher: 'SAE', start: '08:30', end: '10:00' },
-	{ time: '10:00', course: 'Discrete Mathematics', room: '702', teacher: 'SN', start: '10:00', end: '11:30' }
-	],
-	Thursday: [],
-	Friday: [],
-	Saturday: []
+        if (runningClass) {
+          document.getElementById(`runningClass${section}`).innerHTML = `
+            🚀 <strong>Running Class</strong><br>
+            📚 Course: ${runningClass.course}<br>
+            🏫 Room: ${runningClass.room}<br>
+            👩‍🏫 Teacher: ${runningClass.teacher}<br>
+            ⏳ Ends at: ${runningClass.end}
+          `;
+        } else {
+          document.getElementById(`runningClass${section}`).innerHTML = "🌈 No running class right now!";
+        }
 
-};
+        if (upcomingClass) {
+          document.getElementById(`upcomingClass${section}`).innerHTML = `
+            🌟 <strong>Upcoming Class</strong><br>
+            📚 Course: ${upcomingClass.course}<br>
+            🏫 Room: ${upcomingClass.room}<br>
+            👩‍🏫 Teacher: ${upcomingClass.teacher}<br>
+            ⏰ Starts at: ${upcomingClass.start}
+          `;
+        } else {
+          document.getElementById(`upcomingClass${section}`).innerHTML = "🌙 No more classes today! Rest well~";
+        }
+      }
 
-// Function to get current time and date
-function getCurrentDateTime() {
-	const now = new Date();
-	const options = { 
-		weekday: 'long', 
-		year: 'numeric', 
-		month: 'long', 
-		day: 'numeric', 
-		hour: '2-digit', 
-		minute: '2-digit', 
-		hour12: false,
-		timeZone: 'Asia/Dhaka'
-	};
-	
-	return now.toLocaleString('en-US', options);
-}
+      const tomorrow = getTomorrowDayName();
+      const tomorrowSchedule = schedule[tomorrow] || [];
+      const nextDayHintEl = document.getElementById('nextDayHint');
 
-// Check for running and upcoming classes
-function checkClass(schedule, section) {
-	const now = new Date();
-	const currentDay = now.toLocaleString('en-US', { weekday: 'long', timeZone: 'Asia/Dhaka' });
-	const currentTime = now.getHours() * 100 + now.getMinutes(); // Time in HHMM format
-	
-	let runningClass = null;
-	let upcomingClass = null;
-	
-	const dailySchedule = schedule[currentDay];
-	
-	if (dailySchedule.length === 0) {
-		document.getElementById(`runningClass${section}`).innerHTML = "<span class='holiday'>Holiday</span>";
-		document.getElementById(`upcomingClass${section}`).innerHTML = "<span class='holiday'>Holiday</span>";
-		return;
-	}
-	
-	dailySchedule.forEach((item) => {
-		const classStart = parseInt(item.start.replace(':', ''), 10);
-		const classEnd = parseInt(item.end.replace(':', ''), 10);
-		
-		if (currentTime >= classStart && currentTime < classEnd) {
-			runningClass = item;
-		} else if (currentTime < classStart && !upcomingClass) {
-			upcomingClass = item;
-		}
-	});
-	
-	// Display the current running class
-	if (runningClass) {
-		document.getElementById(`runningClass${section}`).innerHTML = `Running Class: <br> 
-		<strong>Course:</strong> ${runningClass.course} <br> 
-		<strong>Room:</strong> ${runningClass.room} <br> 
-		<strong>Teacher:</strong> ${runningClass.teacher} <br> 
-		<strong>Ends at:</strong> ${runningClass.end} <br>`;
-	} else {
-		document.getElementById(`runningClass${section}`).innerHTML = "No running class.";
-	}
-	
-	// Display the upcoming class
-	if (upcomingClass) {
-		document.getElementById(`upcomingClass${section}`).innerHTML = `Upcoming Class: <br> 
-		<strong>Course:</strong> ${upcomingClass.course} <br> 
-		<strong>Room:</strong> ${upcomingClass.room} <br> 
-		<strong>Teacher:</strong> ${upcomingClass.teacher} <br> 
-		<strong>Starts at:</strong> ${upcomingClass.start} <br>`;
-	} else {
-		document.getElementById(`upcomingClass${section}`).innerHTML = "No upcoming class.";
-	}
-}
+      if (tomorrowSchedule.length > 0) {
+        const courses = [...new Set(tomorrowSchedule.map(cls => cls.course))].join(', ');
+        nextDayHintEl.innerHTML = `
+          🌙 <strong>Tomorrow’s Glimmer</strong><br>
+          You’ll have: <strong>${courses}</strong><br>
+          Get ready to shine! ✨
+        `;
+        nextDayHintEl.style.display = 'block';
+      } else {
+        nextDayHintEl.style.display = 'none';
+      }
+    }
 
-// Function to update the time and class information
-function updateTimeAndClassInfo() {
-	document.getElementById("dateTimeA").innerText = getCurrentDateTime();
-	document.getElementById("dateTimeB").innerText = getCurrentDateTime();
-	
-	checkClass(sectionA_schedule, 'A');
-	checkClass(sectionB_schedule, 'B');
-}
+    function updateTimeAndClassInfo() {
+      document.getElementById("dateTimeA").innerText = getCurrentDateTime();
+      checkClass(sectionA_schedule, 'A');
+    }
 
-// Update every minute
-setInterval(updateTimeAndClassInfo, 60000); // Update every 1 minute
-updateTimeAndClassInfo();  // Initial call to display immediately
-</script>
-<img src="https://images7.alphacoders.com/458/thumbbig-458251.webp" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1;">
+    document.addEventListener('DOMContentLoaded', () => {
+      const trailCount = 12;
+      const trails = [];
+      for (let i = 0; i < trailCount; i++) {
+        const dot = document.createElement('div');
+        dot.classList.add('cursor-trail');
+        document.body.appendChild(dot);
+        trails.push({
+          el: dot,
+          x: 0,
+          y: 0,
+          opacity: 0
+        });
+      }
 
+      let mouseX = 0;
+      let mouseY = 0;
+
+      document.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+      });
+
+      const colors = ['#ff9ec9', '#a0e7ff', '#b9fbc0', '#ffcc99', '#d09cf7', '#ff9a9e'];
+
+      function animateTrails() {
+        trails.forEach((trail, i) => {
+          if (i === 0) {
+            trail.x = mouseX;
+            trail.y = mouseY;
+          } else {
+            trail.x += (trails[i - 1].x - trail.x) * 0.5;
+            trail.y += (trails[i - 1].y - trail.y) * 0.5;
+          }
+
+          trail.opacity = Math.max(0, trail.opacity - 0.02);
+          if (Math.abs(trail.x - mouseX) < 2 && Math.abs(trail.y - mouseY) < 2 && i === 0) {
+            trail.opacity = 1;
+          }
+
+          trail.el.style.left = trail.x - 5 + 'px';
+          trail.el.style.top = trail.y - 5 + 'px';
+          trail.el.style.opacity = trail.opacity;
+          trail.el.style.backgroundColor = colors[i % colors.length];
+        });
+
+        requestAnimationFrame(animateTrails);
+      }
+
+      animateTrails();
+      setInterval(updateTimeAndClassInfo, 60000);
+      updateTimeAndClassInfo();
+    });
+  </script>
 </body>
 </html>
