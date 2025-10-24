@@ -97,7 +97,7 @@
     }
 
     .class-info, .transport-info {
-      background: rgba(255, 240, 250, 0.8);
+      background: rgba(255, 240, 255, 0.8);
       padding: 16px;
       border-radius: 16px;
       margin-bottom: 18px;
@@ -175,7 +175,7 @@
     <div class="date-time" id="dateTimeA"></div>
     <div class="class-info" id="runningClassA"></div>
     <div class="class-info" id="upcomingClassA"></div>
-    <div class="class-info next-day-hint" id="nextDayHint" style="display: none;"></div>
+    <div class="class-info next-day-hint" id="nextDayHint"></div>
   </div>
 
   <!-- Transport Schedule -->
@@ -185,7 +185,7 @@
   </div>
 
   <div class="footer">
-    Made with 💖 by <a href="https://github.com/LunarLumos" target="_blank">Aadil</a>
+    Made with 💖 by <a href="https://github.com/LunarLumos" target="_blank">Aifee Aadil
   </div>
 
   <script>
@@ -240,13 +240,6 @@
         timeZone: 'Asia/Dhaka',
         hour12: false
       });
-    }
-
-    function getTomorrowDayName() {
-      const now = new Date();
-      const tomorrow = new Date(now);
-      tomorrow.setDate(tomorrow.getDate() + 1);
-      return tomorrow.toLocaleString('en-US', { weekday: 'long', timeZone: 'Asia/Dhaka' });
     }
 
     function timeToMinutes(timeStr) {
@@ -308,7 +301,6 @@
           }
         });
 
-        // Running Class
         const runningEl = document.getElementById(`runningClass${section}`);
         if (runningClass) {
           const endTime = createTodayDateFromTime(runningClass.end);
@@ -333,7 +325,6 @@
           runningEl.innerHTML = "🌈 No class is dancing right now...";
         }
 
-        // Upcoming Class
         const upcomingEl = document.getElementById(`upcomingClass${section}`);
         if (upcomingClass) {
           const startTime = createTodayDateFromTime(upcomingClass.start);
@@ -359,28 +350,41 @@
         }
       }
 
-      // Tomorrow hint — with FIRST and LAST class
-      const tomorrow = getTomorrowDayName();
-      const tomorrowSchedule = schedule[tomorrow] || [];
-      const nextDayHintEl = document.getElementById('nextDayHint');
+    
+      const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      const todayIndex = daysOfWeek.indexOf(currentDay);
+      let nextClassInfo = null;
 
-      if (tomorrowSchedule.length > 0) {
-        const sortedTomorrow = [...tomorrowSchedule].sort((a, b) => timeToMinutes(a.start) - timeToMinutes(b.start));
-        const firstClass = sortedTomorrow[0];
-        const lastClass = sortedTomorrow[sortedTomorrow.length - 1];
-        const courses = [...new Set(tomorrowSchedule.map(cls => cls.course))].join(', ');
+      for (let offset = 1; offset <= 7; offset++) {
+        const checkDay = daysOfWeek[(todayIndex + offset) % 7];
+        const daySchedule = schedule[checkDay] || [];
+        if (daySchedule.length > 0) {
+          const sorted = [...daySchedule].sort((a, b) => timeToMinutes(a.start) - timeToMinutes(b.start));
+          nextClassInfo = { day: checkDay, ...sorted[0], offset };
+          break;
+        }
+      }
+
+      const nextDayHintEl = document.getElementById('nextDayHint');
+      if (nextClassInfo) {
+        const { day, course, start, room, teacher, offset } = nextClassInfo;
+        let whenText;
+        if (offset === 1) whenText = "Tomorrow";
+        else if (offset === 2) whenText = "In 2 days";
+        else if (day === 'Sunday' && offset > 2) whenText = "This Sunday";
+        else whenText = `In ${offset} days`;
 
         nextDayHintEl.innerHTML = `
-          🌙 <strong>Tomorrow’s Glimmer</strong><br>
-          You’ll have: <strong>${courses}</strong><br>
-          🕒 First class starts at: <strong>${firstClass.start}</strong><br>
-          🕛 Last class ends at: <strong>${lastClass.end}</strong><br>
-          Get ready to shine like moonlight! ✨
+          🌙 <strong>${whenText}’s First Glimmer</strong><br>
+          📚 Course: <strong>${course}</strong><br>
+          🗓️ Day: <strong>${day}</strong> | 🕒 Starts at: <strong>${start}</strong><br>
+          🏫 Room: ${room} | 👩‍🏫 ${teacher}<br>
+          Mark your calendar — knowledge awaits! ✨
         `;
-        nextDayHintEl.style.display = 'block';
       } else {
-        nextDayHintEl.style.display = 'none';
+        nextDayHintEl.innerHTML = "🌌 The week ahead is quiet... a perfect time for deep rest or solo exploration. 🌿";
       }
+      nextDayHintEl.style.display = 'block';
     }
 
     function findNextTransport() {
@@ -389,12 +393,14 @@
         ...transportSchedule.toDIU.map(t => ({
           ...t,
           direction: 'From Home → DIU',
-          numericTime: timeToMinutes(t.time)
+          numericTime: timeToMinutes(t.time),
+          displayLocation: t.location
         })),
         ...transportSchedule.fromDIU.map(t => ({
           ...t,
           direction: 'From DIU → Home',
-          numericTime: timeToMinutes(t.time)
+          numericTime: timeToMinutes(t.time),
+          displayLocation: 'DIU'
         }))
       ].sort((a, b) => a.numericTime - b.numericTime);
 
@@ -413,7 +419,7 @@
           🌙 <strong>First Transport Tomorrow</strong><br>
           🚌 ${next.direction}<br>
           ⏰ Departs at: <strong>${next.time}</strong><br>
-          📍 Pick-up: ${next.location}
+          📍 Pick-up: ${next.displayLocation}
           <br>💨 It’s gone... but another will come soon! 🌈 <span id="countdown-transport">${formatCountdown(tomorrowDate)}</span>
         `;
         const interval = setInterval(() => {
@@ -422,7 +428,7 @@
         }, 1000);
         activeIntervals.push(interval);
       } else if (next) {
-        const targetTime = createTodayDateFromTime(next.time);
+        let targetTime = createTodayDateFromTime(next.time);
         if (targetTime <= now) {
           targetTime.setDate(targetTime.getDate() + 1);
         }
@@ -430,7 +436,7 @@
           🌸 <strong>Your ride is waiting!</strong><br>
           ➡️ ${next.direction}<br>
           ⏰ Departs at: <strong>${next.time}</strong><br>
-          📍 Pick-up: ${next.location}
+          📍 Pick-up: ${next.displayLocation}
           <br>🚌 Your ride is whispering your name... ✨ <span id="countdown-transport">${formatCountdown(targetTime)}</span>
         `;
         const interval = setInterval(() => {
